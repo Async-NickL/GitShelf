@@ -1,14 +1,25 @@
 import { Octokit } from "@octokit/rest";
 import yaml from "js-yaml";
 
+type ReleaseAsset = { name: string; browser_download_url: string };
+type Release = {
+  tag_name: string;
+  name: string | null;
+  assets: ReleaseAsset[];
+};
+type RepoFile = { name: string; download_url: string };
+type SearchRepo = {
+  owner?: { login: string } | null;
+  name: string;
+  description: string | null;
+  stargazers_count: number;
+};
+
 const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
   request: {
-    fetch: (url: string, options: any) => {
-      return fetch(url, {
-        ...options,
-        next: { revalidate: 600 },
-      });
+    fetch: (url: string, options: RequestInit) => {
+      return fetch(url, { ...options, next: { revalidate: 600 } });
     },
   },
 });
@@ -39,14 +50,12 @@ export async function getReleases(
       repo,
       per_page: limit,
     });
-
     if (!data || data.length === 0) return [];
-
-    return data.map((release: any, index: number) => ({
+    return (data as Release[]).map((release, index) => ({
       version: release.tag_name,
       title: release.name || release.tag_name,
       isLatest: index === 0,
-      assets: release.assets.map((asset: any) => ({
+      assets: release.assets.map((asset) => ({
         name: asset.name,
         download_url: asset.browser_download_url,
       })),
@@ -57,47 +66,13 @@ export async function getReleases(
 }
 
 export async function getReadme(owner: string, repo: string) {
-  try {
-    const { data } = await octokit.rest.repos.getReadme({ owner, repo });
-    return Buffer.from(data.content, "base64").toString("utf-8");
-  } catch {
-    return null;
-  }
-}
-
-export async function getStoreAssets(owner: string, repo: string) {
-  try {
-    const { data } = await octokit.rest.repos.getContent({
-      owner,
-      repo,
-      path: ".StoreAssets",
-    });
-
-    if (Array.isArray(data)) {
-      return data.map((file: any) => ({
-        name: file.name,
-        download_url: file.download_url,
-      }));
-    }
-    return [];
-  } catch {
-    return [];
-  }
+  return getFileContent(owner, repo, "README.md");
 }
 
 export async function getStoreYml(owner: string, repo: string) {
   try {
-    const { data } = await octokit.rest.repos.getContent({
-      owner,
-      repo,
-      path: "store.yml",
-    });
-
-    if (!Array.isArray(data) && data.type === "file" && data.content) {
-      const decoded = Buffer.from(data.content, "base64").toString("utf-8");
-      return yaml.load(decoded);
-    }
-    return null;
+    const content = await getFileContent(owner, repo, "store.yml");
+    return content ? yaml.load(content) : null;
   } catch {
     return null;
   }
@@ -111,8 +86,7 @@ export async function searchRepos(query: string) {
       order: "desc",
       per_page: 30,
     });
-
-    return data.items.map((repo: any) => ({
+    return (data.items as SearchRepo[]).map((repo) => ({
       owner: repo.owner?.login,
       name: repo.name,
       description: repo.description || "",
@@ -120,5 +94,61 @@ export async function searchRepos(query: string) {
     }));
   } catch {
     return [];
+  }
+}
+
+export async function getFileMetadata(
+  owner: string,
+  repo: string,
+  path: string,
+) {
+  try {
+    const { data } = await octokit.rest.repos.getContent({ owner, repo, path });
+    if (!Array.isArray(data) && data.type === "file") {
+      return { name: data.name, download_url: data.download_url };
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+export async function getFolderAssets(
+  owner: string,
+  repo: string,
+  path: string,
+) {
+  try {
+    const { data } = await octokit.rest.repos.getContent({ owner, repo, path });
+    if (Array.isArray(data)) {
+      return (data as RepoFile[]).map((file) => ({
+        name: file.name,
+        download_url: file.download_url,
+      }));
+    }
+    return [];
+  } catch {
+    return [];
+  }
+}
+
+export async function getFileContent(
+  owner: string,
+  repo: string,
+  path: string,
+) {
+  try {
+    const { data } = await octokit.rest.repos.getContent({ owner, repo, path });
+    if (
+      !Array.isArray(data) &&
+      data.type === "file" &&
+      "content" in data &&
+      typeof data.content === "string"
+    ) {
+      return Buffer.from(data.content, "base64").toString("utf-8");
+    }
+    return null;
+  } catch {
+    return null;
   }
 }
