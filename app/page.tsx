@@ -1,5 +1,6 @@
 import SearchBar from "@/components/SearchBar";
 import CategoryRow from "@/components/CategoryRow";
+export const dynamic = "force-dynamic";
 
 interface RepoItem {
   owner: string;
@@ -19,8 +20,7 @@ interface Category {
 async function getTrending(): Promise<Category[]> {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000"}/api/trending`,
-      { next: { revalidate: 43200 } },
+      `${process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000"}/api/trending`
     );
     if (!res.ok) return [];
     return res.json();

@@ -18,7 +18,6 @@ async function fetchResults(query: string): Promise<RepoItem[]> {
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000"}/api/search?q=${encodeURIComponent(query)}`,
-      { cache: "no-store" },
     );
     if (!res.ok) return [];
     return res.json();

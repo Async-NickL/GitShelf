@@ -50,7 +50,6 @@ async function fetchStoreData(owner: string, repo: string): Promise<StoreData | 
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000"}/api/store/${owner}/${repo}`,
-      { next: { revalidate: 600 } },
     );
     if (!res.ok) return null;
     return res.json();

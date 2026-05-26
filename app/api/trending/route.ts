@@ -47,6 +47,17 @@ export async function GET() {
       title: cat.title,
       items: results[index].slice(0, 10),
     }));
+    
+    const hasItems = payload.some(cat => cat.items.length > 0);
+
+    if (!hasItems) {
+      return NextResponse.json(payload, { 
+        status: 200, 
+        headers: {
+          'Cache-Control': 'no-store, max-age=0'
+        }
+      });
+    }
 
     return NextResponse.json(payload, { status: 200 });
   } catch {
