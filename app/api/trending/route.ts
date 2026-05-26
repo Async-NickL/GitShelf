@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { searchRepos } from "@/lib/github";
 
-export const revalidate = 43200; //here I have added intentionally more cache time cause trending repositories on github do not change frequently and it will help to reduce the number of API calls to github and also improve the performance of the application.
+export const revalidate = 43200;
 
 export async function GET() {
   try {

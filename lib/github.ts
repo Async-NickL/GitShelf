@@ -13,6 +13,7 @@ type SearchRepo = {
   name: string;
   description: string | null;
   stargazers_count: number;
+  forks_count: number;
 };
 
 const octokit = new Octokit({
@@ -92,6 +93,7 @@ export async function searchRepos(query: string) {
       name: repo.name,
       description: repo.description || "",
       stars: repo.stargazers_count,
+      forks: repo.forks_count,
     }));
   } catch {
     return [];
