@@ -9,7 +9,7 @@ type Release = {
 };
 type RepoFile = { name: string; download_url: string };
 type SearchRepo = {
-  owner?: { login: string } | null;
+  owner?: { login: string; avatar_url: string } | null;
   name: string;
   description: string | null;
   stargazers_count: number;
@@ -88,6 +88,7 @@ export async function searchRepos(query: string) {
     });
     return (data.items as SearchRepo[]).map((repo) => ({
       owner: repo.owner?.login,
+      avatar: repo.owner?.avatar_url || null,
       name: repo.name,
       description: repo.description || "",
       stars: repo.stargazers_count,
