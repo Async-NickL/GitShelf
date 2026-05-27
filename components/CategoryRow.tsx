@@ -32,7 +32,7 @@ export default function CategoryRow({ title, items }: CategoryRowProps) {
 
   return (
     <section className="mb-14">
-      <p className="mb-5 px-4 sm:px-1 font-semibold tracking-wide uppercase">
+      <p className="mb-1 px-4 sm:px-1 font-semibold tracking-wide uppercase">
         <ShinyText
           text={title}
           speed={4}
@@ -69,7 +69,7 @@ export default function CategoryRow({ title, items }: CategoryRowProps) {
             900:  { slidesPerView: 2.4,  spaceBetween: 18 },
             1200: { slidesPerView: 3.1,  spaceBetween: 20 },
           }}
-          className="category-swiper !pb-9"
+          className="category-swiper !pb-9 !pt-9"
         >
           {items.map((item, i) => (
             <SwiperSlide key={i} className="!h-auto">
@@ -80,9 +80,9 @@ export default function CategoryRow({ title, items }: CategoryRowProps) {
                     backgroundColor="var(--card)"
                     borderRadius={16}
                     glowRadius={36}
-                    glowColor="200 70 80"
+                    glowColor="var(--primary)"
                     glowIntensity={0.9}
-                    colors={['#c084fc', '#818cf8', '#38bdf8']}
+                    colors={['var(--primary)', 'var(--chart-2)', 'var(--chart-1)']}
                     fillOpacity={0.35}
                     animated
                   >

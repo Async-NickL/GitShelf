@@ -79,13 +79,12 @@ export async function getStoreYml(owner: string, repo: string) {
   }
 }
 
-export async function searchRepos(query: string) {
+export async function searchRepos(query: string, sort: 'stars' | 'relevance' = 'stars') {
   try {
     const { data } = await octokit.rest.search.repos({
       q: `${query} has:releases`,
-      sort: "stars",
-      order: "desc",
       per_page: 30,
+      ...(sort === 'stars' ? { sort: 'stars', order: 'desc' } : {})
     });
     return (data.items as SearchRepo[]).map((repo) => ({
       owner: repo.owner?.login,
