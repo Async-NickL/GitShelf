@@ -1,0 +1,13 @@
+services:
+  gitshelf:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      # Optional: Add your GitHub Token to avoid rate limits
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+      # Required for Next.js API routes (if any are called from client)
+      - NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL:-http://localhost:3000}
+    restart: unless-stopped
