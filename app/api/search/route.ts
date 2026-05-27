@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const results = await searchRepos(query.trim());
+    const results = await searchRepos(query.trim(), 'relevance');
 
     return NextResponse.json(results, { status: 200 });
   } catch {

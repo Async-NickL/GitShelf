@@ -4,18 +4,24 @@ import './BorderGlow.css';
 
 interface HSL { h: number; s: number; l: number }
 
-function parseHSL(hslStr: string): HSL {
-  const match = hslStr.match(/([\d.]+)\s*([\d.]+)%?\s*([\d.]+)%?/);
-  if (!match) return { h: 40, s: 80, l: 80 };
-  return { h: parseFloat(match[1]), s: parseFloat(match[2]), l: parseFloat(match[3]) };
-}
-
 function buildGlowVars(glowColor: string, intensity: number): Record<string, string> {
-  const { h, s, l } = parseHSL(glowColor);
-  const base = `${h}deg ${s}% ${l}%`;
+  const match = glowColor.match(/([\d.]+)\s*([\d.]+)%?\s*([\d.]+)%?/);
   const opacities = [100, 60, 50, 40, 30, 20, 10];
   const keys = ['', '-60', '-50', '-40', '-30', '-20', '-10'];
   const vars: Record<string, string> = {};
+
+  if (!match) {
+    for (let i = 0; i < opacities.length; i++) {
+      const pct = Math.min(opacities[i] * intensity, 100);
+      vars[`--glow-color${keys[i]}`] = `color-mix(in oklch, ${glowColor} ${pct}%, transparent)`;
+    }
+    return vars;
+  }
+
+  const h = parseFloat(match[1]);
+  const s = parseFloat(match[2]);
+  const l = parseFloat(match[3]);
+  const base = `${h}deg ${s}% ${l}%`;
   for (let i = 0; i < opacities.length; i++) {
     vars[`--glow-color${keys[i]}`] = `hsl(${base} / ${Math.min(opacities[i] * intensity, 100)}%)`;
   }
