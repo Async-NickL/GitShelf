@@ -36,6 +36,8 @@ export async function GET(
     let iconPath = ".StoreAssets/icon.png";
     let screensPath = ".StoreAssets/Screens";
     let changelogPath = null;
+    let website = null;
+    let webapp = null;
 
     if (storeYml && typeof storeYml === "object") {
       const store = storeYml as Record<string, unknown>;
@@ -52,6 +54,8 @@ export async function GET(
       if (typeof store.screenshots === "string")
         screensPath = store.screenshots;
       if (typeof store.changelog === "string") changelogPath = store.changelog;
+      if (typeof store.website === "string") website = store.website;
+      if (typeof store.webapp === "string") webapp = store.webapp;
     }
 
     const [iconMeta, screenshots, changelog] = await Promise.all([
@@ -69,10 +73,12 @@ export async function GET(
       readme: readme,
       changelog: changelog,
       assets: {
-        icon: iconMeta?.download_url || null,
+        icon: iconMeta?.download_url || repoData.avatar || `https://avatars.githubusercontent.com/${owner}`,
         screenshots: screenshots,
       },
       releases: releases,
+      website: website || repoData?.homepage || null,
+      webapp: webapp || null,
     };
 
     return NextResponse.json(payload, { status: 200 });

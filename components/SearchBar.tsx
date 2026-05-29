@@ -79,7 +79,10 @@ export default function SearchBar({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (activeIndex >= 0 && suggestions[activeIndex]) {
-      navigate(suggestions[activeIndex].name);
+      const s = suggestions[activeIndex];
+      setIsOpen(false);
+      setSuggestions([]);
+      router.push(`/${s.owner}/${s.name}`);
     } else {
       navigate(value);
     }
@@ -191,7 +194,11 @@ export default function SearchBar({
                             : "hover:bg-accent/60"
                         }`}
                         onMouseEnter={() => setActiveIndex(i)}
-                        onClick={() => navigate(s.name)}
+                        onClick={() => {
+                          setIsOpen(false);
+                          setSuggestions([]);
+                          router.push(`/${s.owner}/${s.name}`);
+                        }}
                       >
                         <Avatar className="h-8 w-8 rounded-lg shrink-0">
                           <AvatarImage

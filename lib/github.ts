@@ -34,6 +34,8 @@ export async function getRepo(owner: string, repo: string) {
       stars: data.stargazers_count,
       forks: data.forks_count,
       lastUpdated: data.updated_at,
+      avatar: data.owner?.avatar_url || null,
+      homepage: data.homepage || null,
     };
   } catch {
     return null;

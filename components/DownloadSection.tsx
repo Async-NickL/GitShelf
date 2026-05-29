@@ -1,6 +1,38 @@
 "use client";
-import { useEffect, useState } from "react";
-import { Download, Monitor, Smartphone, Apple, Terminal, ChevronDown } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Download, ChevronDown } from "lucide-react";
+
+function PlatformIcon({ platform, className }: { platform: string; className?: string }) {
+  const logoMap: Record<string, string> = {
+    windows: "/logos/windows.svg",
+    mac: "/logos/apple.svg",
+    linux: "/logos/linux.svg",
+    android: "/logos/android.svg",
+  };
+  const logoUrl = logoMap[platform] || "";
+  if (!logoUrl) return null;
+  return (
+    <div
+      className={className}
+      style={{
+        maskImage: `url(${logoUrl})`,
+        WebkitMaskImage: `url(${logoUrl})`,
+        maskRepeat: "no-repeat",
+        WebkitMaskRepeat: "no-repeat",
+        maskPosition: "center",
+        WebkitMaskPosition: "center",
+        maskSize: "contain",
+        WebkitMaskSize: "contain",
+        backgroundColor: "currentColor",
+      }}
+    />
+  );
+}
+
+const WindowsIcon = (props: { className?: string }) => <PlatformIcon platform="windows" {...props} />;
+const AppleIcon = (props: { className?: string }) => <PlatformIcon platform="mac" {...props} />;
+const LinuxIcon = (props: { className?: string }) => <PlatformIcon platform="linux" {...props} />;
+const AndroidIcon = (props: { className?: string }) => <PlatformIcon platform="android" {...props} />;
 
 interface Asset {
   name: string;
@@ -16,18 +48,19 @@ interface Release {
 
 interface DownloadSectionProps {
   releases: Release[];
+  appIcon?: string | null;
 }
 
 type Platform = "windows" | "mac" | "linux" | "android" | "unknown";
 
 const PLATFORM_CONFIG: Record<
   Exclude<Platform, "unknown">,
-  { label: string; icon: typeof Monitor; extensions: string[] }
+  { label: string; icon: React.ComponentType<{ className?: string }>; extensions: string[] }
 > = {
-  windows: { label: "Windows", icon: Monitor, extensions: [".exe", ".msi", ".msix", ".appx", ".zip"] },
-  mac: { label: "macOS", icon: Apple, extensions: [".dmg", ".pkg", ".app"] },
-  linux: { label: "Linux", icon: Terminal, extensions: [".deb", ".rpm", ".appimage", ".snap", ".tar.gz", ".tar.xz"] },
-  android: { label: "Android", icon: Smartphone, extensions: [".apk", ".aab"] },
+  windows: { label: "Windows", icon: WindowsIcon, extensions: [".exe", ".msi", ".msix", ".appx", ".zip"] },
+  mac: { label: "macOS", icon: AppleIcon, extensions: [".dmg", ".pkg", ".app"] },
+  linux: { label: "Linux", icon: LinuxIcon, extensions: [".deb", ".rpm", ".appimage", ".snap", ".tar.gz", ".tar.xz"] },
+  android: { label: "Android", icon: AndroidIcon, extensions: [".apk", ".aab"] },
 };
 
 function detectPlatform(): Platform {
@@ -50,7 +83,7 @@ function classifyAsset(name: string): Platform | null {
   return null;
 }
 
-export default function DownloadSection({ releases }: DownloadSectionProps) {
+export default function DownloadSection({ releases, appIcon }: DownloadSectionProps) {
   const [userPlatform, setUserPlatform] = useState<Platform>("unknown");
   const [showAll, setShowAll] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -73,7 +106,12 @@ export default function DownloadSection({ releases }: DownloadSectionProps) {
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-foreground">Download</h2>
+          <div className="flex items-center gap-2">
+            {appIcon && (
+              <img src={appIcon} className="h-5 w-5 rounded-md object-cover ring-1 ring-border/50 shrink-0" alt="App Icon" />
+            )}
+            <h2 className="text-sm font-semibold text-foreground">Download</h2>
+          </div>
           <ReleaseDropdown
             releases={releases}
             selectedIndex={selectedIndex}
@@ -111,7 +149,12 @@ export default function DownloadSection({ releases }: DownloadSectionProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-foreground">Download</h2>
+        <div className="flex items-center gap-2">
+          {appIcon && (
+            <img src={appIcon} className="h-5 w-5 rounded-md object-cover ring-1 ring-border/50 shrink-0" alt="App Icon" />
+          )}
+          <h2 className="text-sm font-semibold text-foreground">Download</h2>
+        </div>
         <ReleaseDropdown
           releases={releases}
           selectedIndex={selectedIndex}
