@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   },
   robots: "index, follow",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/icon.png",
   },
 };
 
