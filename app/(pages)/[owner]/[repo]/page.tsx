@@ -44,6 +44,8 @@ interface StoreData {
     screenshots: { name: string; download_url: string }[];
   };
   releases: Release[];
+  website?: string | null;
+  webapp?: string | null;
 }
 
 async function fetchStoreData(owner: string, repo: string): Promise<StoreData | null> {
@@ -202,7 +204,7 @@ export default async function StorePage({
               )}
 
               <div className="mb-8 lg:hidden">
-                <DownloadSection releases={data.releases} />
+                <DownloadSection releases={data.releases} appIcon={iconUrl} />
               </div>
 
               {data.readme && (
@@ -225,7 +227,7 @@ export default async function StorePage({
             <aside className="w-full lg:w-80 shrink-0">
               <div className="lg:sticky lg:top-20 space-y-6">
                 <div className="hidden lg:block">
-                  <DownloadSection releases={data.releases} />
+                  <DownloadSection releases={data.releases} appIcon={iconUrl} />
                 </div>
 
                 <div className="rounded-xl border border-border/50 bg-card p-4 space-y-3">
@@ -245,6 +247,34 @@ export default async function StorePage({
                     </div>
                   )}
 
+                  {data.website && (
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-muted-foreground">Official Website</span>
+                      <a
+                        href={data.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline flex items-center gap-1 font-medium truncate max-w-[150px]"
+                      >
+                        Visit Site <ExternalLink className="h-3 w-3" />
+                      </a>
+                    </div>
+                  )}
+
+                  {data.webapp && (
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-muted-foreground">Web Application</span>
+                      <a
+                        href={data.webapp}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline flex items-center gap-1 font-medium"
+                      >
+                        Open App <ExternalLink className="h-3 w-3" />
+                      </a>
+                    </div>
+                  )}
+
                   {tags.length > 0 && (
                     <div>
                       <span className="text-xs text-muted-foreground block mb-1.5">Tags</span>
@@ -256,7 +286,7 @@ export default async function StorePage({
                     </div>
                   )}
 
-                  <div className="pt-2 border-t border-border/40">
+                  <div className="pt-2 border-t border-border/40 space-y-2">
                     <a
                       href={`https://github.com/${owner}/${repo}`}
                       target="_blank"
