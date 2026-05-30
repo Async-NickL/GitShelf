@@ -26,18 +26,18 @@ interface CategoryRowProps {
 }
 
 export default function CategoryRow({ title, items }: CategoryRowProps) {
-  if (!items || items.length === 0) return null;
-
   const [activeIndex, setActiveIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(true);
 
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 639px)');
-    setIsMobile(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
+    const sync = () => setIsMobile(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
   }, []);
+
+  if (!items || items.length === 0) return null;
 
   return (
     <section className="mb-14">
@@ -54,6 +54,7 @@ export default function CategoryRow({ title, items }: CategoryRowProps) {
 
       <div className="relative overflow-x-clip">
         <Swiper
+          key={String(isMobile)}
           modules={[EffectCoverflow, Pagination, Keyboard, Autoplay]}
           effect="coverflow"
           grabCursor
