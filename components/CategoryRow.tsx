@@ -54,6 +54,7 @@ export default function CategoryRow({ title, items }: CategoryRowProps) {
 
       <div className="relative overflow-x-clip">
         <Swiper
+          key={String(isMobile)}
           modules={[EffectCoverflow, Pagination, Keyboard, Autoplay]}
           effect="coverflow"
           grabCursor
