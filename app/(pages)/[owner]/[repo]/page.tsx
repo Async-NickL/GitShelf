@@ -70,10 +70,10 @@ export async function generateMetadata({
   const appName = data?.store?.name || data?.repo?.name || repo;
   const desc = data?.store?.short_description || data?.repo?.description || "";
   return {
-    title: `${appName} — GitShelf`,
+    title: `${appName} • GitShelf`,
     description: desc,
     openGraph: {
-      title: `${appName} — GitShelf`,
+      title: `${appName} • GitShelf`,
       description: desc,
     },
   };
