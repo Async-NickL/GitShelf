@@ -4,7 +4,7 @@ import { EffectCoverflow, Pagination, Keyboard, Autoplay } from 'swiper/modules'
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 import 'swiper/css/pagination';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AppCard from '@/components/AppCard';
 import BorderGlow from '@/components/BorderGlow';
 import ShinyText from '@/components/ShinyText';
@@ -29,6 +29,15 @@ export default function CategoryRow({ title, items }: CategoryRowProps) {
   if (!items || items.length === 0) return null;
 
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(true);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 639px)');
+    setIsMobile(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
 
   return (
     <section className="mb-14">
@@ -49,9 +58,9 @@ export default function CategoryRow({ title, items }: CategoryRowProps) {
           effect="coverflow"
           grabCursor
           centeredSlides
-          loop
+          loop={!isMobile}
           keyboard={{ enabled: true }}
-          autoplay={{ delay: 3000, disableOnInteraction: false, pauseOnMouseEnter: true }}
+          autoplay={isMobile ? false : { delay: 3000, disableOnInteraction: false, pauseOnMouseEnter: true }}
           coverflowEffect={{
             rotate: 0,
             stretch: 0,
@@ -74,7 +83,7 @@ export default function CategoryRow({ title, items }: CategoryRowProps) {
           {items.map((item, i) => (
             <SwiperSlide key={i} className="!h-auto">
               <div className="h-[390px]">
-                {activeIndex === i ? (
+                {!isMobile && activeIndex === i ? (
                   <BorderGlow
                     className="h-full w-full"
                     backgroundColor="var(--card)"
